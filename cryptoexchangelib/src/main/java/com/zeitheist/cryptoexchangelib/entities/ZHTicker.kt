@@ -1,8 +1,11 @@
-package com.zeitheist.cryptoexchangelib.pojo.common
+package com.zeitheist.cryptoexchangelib.entities
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 
-//@Entity(tableName = "commonticker")
-data class CommonTicker(
+@Entity(tableName = "zhTicker")
+data class ZHTicker(
         val exchangeId: Int,
         val symbol: String,
 
@@ -22,7 +25,7 @@ data class CommonTicker(
         var changePercent60: Float = 0F,
         var changePercent1440: Float = 0F,
 
-        //@PrimaryKey
+        @PrimaryKey
         val pairId: String = "$exchangeId${symbol.toUpperCase()}"
 )
 

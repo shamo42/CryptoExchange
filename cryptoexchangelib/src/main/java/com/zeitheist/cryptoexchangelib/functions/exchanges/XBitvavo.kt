@@ -5,13 +5,12 @@ import android.net.Uri
 import com.kyoapps.zkotlinextensions.extensions.*
 import com.kyoapps.zkotlinextensions.objects.ResultObject
 import com.zeitheist.cryptoexchangelib.api.BitvavoApi
+import com.zeitheist.cryptoexchangelib.entities.*
 import com.zeitheist.cryptoexchangelib.functions.FuncBook
 import com.zeitheist.cryptoexchangelib.functions.FuncCrypt
 import com.zeitheist.cryptoexchangelib.helpers.C_SETTINGS
 import com.zeitheist.cryptoexchangelib.helpers.C_CONST
 import com.zeitheist.cryptoexchangelib.pojo.bitvavo.*
-import com.zeitheist.cryptoexchangelib.pojo.common.*
-import com.zeitheist.cryptoexchangelib.pojo.common.ZHDeposit
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
@@ -33,22 +32,46 @@ object XBitvavo {
     fun getPairs(okHttpClient: OkHttpClient = client): Single<ResultObject<List<ZHCurrencyPair>>> {
         return bitvavoApi(okHttpClient).getMarkets()
             .toResultObjectList<BitvavoMarket>()
-            .mapResult { it.map { ZHCurrencyPair(C_CONST.BITVAVO_ID, it.market, "${it.base}/${it.quote}")} }
+            .mapResult { it.map {
+                ZHCurrencyPair(
+                    C_CONST.BITVAVO_ID,
+                    it.market,
+                    "${it.base}/${it.quote}"
+                )
+            } }
             .subscribeOn(Schedulers.io())
     }
 
 
-    fun getTickerAll(okHttpClient: OkHttpClient = client): Single<ResultObject<List<CommonTicker>>> {
+    fun getTickerAll(okHttpClient: OkHttpClient = client): Single<ResultObject<List<ZHTicker>>> {
         return bitvavoApi(okHttpClient).getTickerAll()
             .toResultObjectList<BitvavoTickerPrice>()
-            .mapResult { it.map { CommonTicker(C_CONST.BITVAVO_ID, it.market, it.price, symbolFormatted = it.market.replace("-", "/")) } }
+            .mapResult { it.map {
+                ZHTicker(
+                    C_CONST.BITVAVO_ID,
+                    it.market,
+                    it.price,
+                    symbolFormatted = it.market.replace("-", "/")
+                )
+            } }
             .subscribeOn(Schedulers.io())
     }
 
-    fun getTickerSingle(okHttpClient: OkHttpClient = client, pair: String): Single<ResultObject<CommonTicker>> {
+    fun getTickerSingle(okHttpClient: OkHttpClient = client, pair: String): Single<ResultObject<ZHTicker>> {
         return bitvavoApi(okHttpClient).getTickerSingleDetail(pair)
             .toResultObject<BitvavoTicker24h>()
-            .mapResult { CommonTicker(C_CONST.BITVAVO_ID, it.market, it.last, it.bid, it.bidSize, it.ask, it.askSize, it.market.replace("-", "/")) }
+            .mapResult {
+                ZHTicker(
+                    C_CONST.BITVAVO_ID,
+                    it.market,
+                    it.last,
+                    it.bid,
+                    it.bidSize,
+                    it.ask,
+                    it.askSize,
+                    it.market.replace("-", "/")
+                )
+            }
             .subscribeOn(Schedulers.io())
     }
 
@@ -57,7 +80,12 @@ object XBitvavo {
         return bitvavoApi(okHttpClient).getBook(pair)
             .toResultObject<BitvavoBook>()
             .mapResult { book ->
-                ZHBook(book.asks.associateBy({it.first()}, {it.last()}).toMutableMap(), (book.bids.associateBy ({ it.first() }, { it.last() })).toMutableMap())
+                ZHBook(
+                    book.asks.associateBy(
+                        { it.first() },
+                        { it.last() }).toMutableMap(),
+                    (book.bids.associateBy({ it.first() }, { it.last() })).toMutableMap()
+                )
             }
             .subscribeOn(Schedulers.io())
     }
@@ -180,7 +208,15 @@ object XBitvavo {
             startUnix
         )
             .toResultObjectList<BitvavoDepositHistory>()
-            .mapResult { it.map { ZHDeposit(it.address, it.amount, it.fee, it.symbol, it.timestamp) } }
+            .mapResult { it.map {
+                ZHDeposit(
+                    it.address,
+                    it.amount,
+                    it.fee,
+                    it.symbol,
+                    it.timestamp
+                )
+            } }
             .subscribeOn(Schedulers.io())
     }
 
@@ -193,7 +229,13 @@ object XBitvavo {
             symbol
         )
             .toResultObjectList<BitvavoBalance>()
-            .mapResult { it.map { ZHBalance( it.symbol, it.available, it.inOrder) } }
+            .mapResult { it.map {
+                ZHBalance(
+                    it.symbol,
+                    it.available,
+                    it.inOrder
+                )
+            } }
             .subscribeOn(Schedulers.io())
     }
 
@@ -205,13 +247,24 @@ object XBitvavo {
      * WebSocket
      */
 
-    fun getTickerWebSocket(okHttpClient: OkHttpClient, pairList: List<String>): Flowable<ResultObject<CommonTicker>> {
+    fun getTickerWebSocket(okHttpClient: OkHttpClient, pairList: List<String>): Flowable<ResultObject<ZHTicker>> {
         return okHttpClient.toWebSocketFlowable(C_CONST.BITVAVO_WEBSOCKET_URL)
             .toResultObject<BitvavoWSTicker24Result, BitvavoWSTickerConfirmation>(
                     BitvavoWSRequest(listOf(Channel(pairList, "ticker24h"))).toJsonString()
             )
             .flattenResultObject { it.data }
-            .mapResult { CommonTicker(C_CONST.BITVAVO_ID, it.market, it.last, it.bid, it.bidSize, it.ask, it.askSize, it.market.replace("-", "/")) }
+            .mapResult {
+                ZHTicker(
+                    C_CONST.BITVAVO_ID,
+                    it.market,
+                    it.last,
+                    it.bid,
+                    it.bidSize,
+                    it.ask,
+                    it.askSize,
+                    it.market.replace("-", "/")
+                )
+            }
             .subscribeOn(Schedulers.io())
     }
 
@@ -222,7 +275,12 @@ object XBitvavo {
                     BitvavoWSRequest(listOf(Channel(pairList, "book"))).toJsonString()
             )
             .mapResult { book ->
-                ZHBook(book.asks.associateBy({it.first()}, {it.last()}).toMutableMap(), (book.bids.associateBy ({ it.first() }, { it.last() })).toMutableMap())
+                ZHBook(
+                    book.asks.associateBy(
+                        { it.first() },
+                        { it.last() }).toMutableMap(),
+                    (book.bids.associateBy({ it.first() }, { it.last() })).toMutableMap()
+                )
             }
             .subscribeOn(Schedulers.io())
     }
@@ -343,10 +401,29 @@ object XBitvavo {
     }
 
     private fun bitvavoOrderToCommonOrder(order: BitvavoOrder): ZHOrder {
-        return ZHOrder(order.side, order.amount, order.filledAmount, order.created, order.feePaid, order.market,
-            order.onHold, order.onHoldCurrency, order.orderId, order.orderType, order.price,
-            order.status, order.feeCurrency, order.amountRemaining, order.filledAmountQuote, order.timeInForce,
-            order.postOnly, order.amountQuote, order.amountQuoteRemaining, order.updated, order.fills)
+        return ZHOrder(
+            order.side,
+            order.amount,
+            order.filledAmount,
+            order.created,
+            order.feePaid,
+            order.market,
+            order.onHold,
+            order.onHoldCurrency,
+            order.orderId,
+            order.orderType,
+            order.price,
+            order.status,
+            order.feeCurrency,
+            order.amountRemaining,
+            order.filledAmountQuote,
+            order.timeInForce,
+            order.postOnly,
+            order.amountQuote,
+            order.amountQuoteRemaining,
+            order.updated,
+            order.fills
+        )
     }
 
     private const val TAG = "XBitvavo"

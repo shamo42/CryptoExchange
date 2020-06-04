@@ -1,7 +1,7 @@
 package com.zeitheist.cryptoexchangelib.functions
 
 import com.kyoapps.zkotlinextensions.objects.ResultObject
-import com.zeitheist.cryptoexchangelib.pojo.common.ZHBook
+import com.zeitheist.cryptoexchangelib.entities.ZHBook
 import java.util.*
 
 internal object FuncBook {

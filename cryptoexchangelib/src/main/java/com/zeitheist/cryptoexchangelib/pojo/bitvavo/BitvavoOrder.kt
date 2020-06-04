@@ -1,7 +1,7 @@
 package com.zeitheist.cryptoexchangelib.pojo.bitvavo
 
 import com.squareup.moshi.JsonClass
-import com.zeitheist.cryptoexchangelib.pojo.common.Fill
+import com.zeitheist.cryptoexchangelib.entities.Fill
 
 @JsonClass(generateAdapter = true)
 internal data class BitvavoOrder(

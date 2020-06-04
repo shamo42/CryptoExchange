@@ -1,6 +1,9 @@
-package com.zeitheist.cryptoexchangelib.pojo.common
+package com.zeitheist.cryptoexchangelib.entities
 
-//@Entity(tableName = "currencypair")
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "zhCurrencyPair")
 data class ZHCurrencyPair(
         val exchangeId: Int,
         val symbolId: String,
@@ -8,8 +11,7 @@ data class ZHCurrencyPair(
         val isTrading: Boolean = true,
         val isPreTrading: Boolean = false,
 
-        //@PrimaryKey
-        //val pairId: Int = ("$exchangeId${symbolId.toUpperCase()}").hashCode()
+        @PrimaryKey
         val pairId: String = "$exchangeId${symbolId.toUpperCase()}"
 
 )

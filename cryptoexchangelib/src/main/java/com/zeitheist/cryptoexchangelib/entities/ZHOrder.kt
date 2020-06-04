@@ -1,7 +1,11 @@
-package com.zeitheist.cryptoexchangelib.pojo.common
+package com.zeitheist.cryptoexchangelib.entities
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.squareup.moshi.JsonClass
 
+@Entity(tableName = "zhOrder")
 @JsonClass(generateAdapter = true)
 data class ZHOrder(
     val side: String,
@@ -10,8 +14,9 @@ data class ZHOrder(
     val timestamp: Long,
     val fee: Float,
     val currencyPair: String,
-    val onHold: Float,
+    val onHoldAmount: Float,
     val onHoldCurrency: String,
+    @PrimaryKey
     val orderId: String,
     val orderType: String,
     val price: Float,
@@ -24,7 +29,7 @@ data class ZHOrder(
     val amountQuote: Float? = null,
     val amountQuoteRemaining: Float? = null,
     val updatedTimestamp: Long? = null,
-    val fills: List<Fill>? = null,
+    @Embedded val fills: List<Fill>? = null,
     val tradeIds: List<String>? = null
     )
 

@@ -1,4 +1,4 @@
-package com.zeitheist.cryptoexchangelib.pojo.common
+package com.zeitheist.cryptoexchangelib.entities
 
 import com.squareup.moshi.JsonClass
 

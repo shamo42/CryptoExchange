@@ -9,7 +9,7 @@ import com.zeitheist.cryptoexchangelib.api.KrakenApi
 import com.zeitheist.cryptoexchangelib.functions.FuncCrypt
 import com.zeitheist.cryptoexchangelib.helpers.C_CONST
 import com.zeitheist.cryptoexchangelib.helpers.C_SETTINGS
-import com.zeitheist.cryptoexchangelib.pojo.common.ZHCurrencyPair
+import com.zeitheist.cryptoexchangelib.entities.ZHCurrencyPair
 import com.zeitheist.cryptoexchangelib.pojo.kraken.KrakenPairs
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
 import io.reactivex.rxjava3.core.Single
@@ -31,7 +31,13 @@ object XKraken {
             .toResultObject<KrakenPairs>()
             .mapResult { pairList ->
                 if (pairList.result != null)
-                    pairList.result.map { ZHCurrencyPair(C_CONST.KRAKEN_ID, it.key, "${it.value.base}/${it.value.quote}")}
+                    pairList.result.map {
+                        ZHCurrencyPair(
+                            C_CONST.KRAKEN_ID,
+                            it.key,
+                            "${it.value.base}/${it.value.quote}"
+                        )
+                    }
                 else throw Throwable(pairList.error.toString())
             }
             .onErrorReturn { ResultObject.Error<List<ZHCurrencyPair>>(it) }
