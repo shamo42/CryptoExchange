@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -23,6 +23,14 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
@@ -48,7 +56,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.3.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
 
-    implementation 'com.kyoapps:zkotlinextensions:1.0.23'
+    implementation 'com.kyoapps:zkotlinextensions:1.0.24'
 
 
     // RxJava
@@ -61,13 +69,13 @@ dependencies {
     // Json
     def moshi_version = '1.9.2'
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
-    //implementation 'com.squareup.retrofit2:converter-moshi:2.8.1'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.8.1'
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
 
 
     // Network
     def retrofit_version = '2.8.1'
-    //implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    // implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
     implementation 'com.squareup.okhttp3:okhttp:4.5.0'
     implementation 'com.squareup.okio:okio:2.5.0'
@@ -81,20 +89,20 @@ dependencies {
 ext {
     developerId = 'shamo42'
     bintrayRepo = 'Crypto' // Bintray module name
-    bintrayName = 'com.kyoapps.zkotlinextensions'   // Bintray package name
+    bintrayName = 'com.zeitheist.cryptoexchange'   // Bintray package name
 
-    publishedGroupId = 'com.kyoapps'
-    libraryName = 'zkotlinextensions'
-    artifact = 'zkotlinextensions'
+    publishedGroupId = 'com.zeitheist'
+    libraryName = 'cryptoexchange'
+    artifact = 'cryptoexchangelib'
 
-    libraryDescription = 'Kotlin extension for Android, RxJava, Moshi and OkHttp'
+    libraryDescription = 'Crypto exchange library in Kotlin'
 
     // Your github repo link
-    siteUrl = 'https://github.com/shamo42/kotlinextensions'
-    gitUrl = 'https://github.com/shamo42/kotlinextensions.git'
-    githubRepository= 'shamo42/kotlinextensions'
+    siteUrl = 'https://github.com/shamo42/cryptoexchange'
+    gitUrl = 'https://github.com/shamo42/cryptoexchange.git'
+    githubRepository= 'shamo42/cryptoexchange'
 
-    libraryVersion = '1.0.23'
+    libraryVersion = '1.0.2'
 
     developerName = 'Wiltgen'
     developerEmail = 'number28@gmx.net'
